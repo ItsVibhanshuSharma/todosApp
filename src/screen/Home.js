@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,22 +10,11 @@ import {
 } from 'react-native';
 import colors from '../constant/colors';
 
-const data = [
-  {
-    title: 'Hello',
-  },
-  {
-    title: 'Hello',
-  },
-];
 export default function Home() {
   const [task, setTask] = useState('');
   const [list, setList] = useState([]);
   const [visible, setVisible] = useState('');
   const handleSubmit = () => {
-    console.log('Task ->', task);
-    // setList(...list, task);
-    // setList([...list, {title: task}]);
     setList([...list, {title: task}]);
     setTask('');
     setVisible(false);
@@ -33,6 +22,12 @@ export default function Home() {
 
   const handleAdd = () => {
     setVisible(true);
+  };
+
+  const handleDelete = index => {
+    const updatedList = [...list];
+    updatedList.splice(index, 1);
+    setList(updatedList);
   };
   return (
     <View style={styles.container}>
@@ -44,40 +39,36 @@ export default function Home() {
               <Text key={index} style={{color: 'black'}}>
                 {item.title}
               </Text>
+              <Pressable onPress={() => handleDelete(index)}>
+                <Text style={styles.deleteButton}>Delete</Text>
+              </Pressable>
             </View>
           ))}
-          <View>
-            <Modal visible={visible} animationType="slide">
-              <View style={styles.modalContainer}>
-                <View style={styles.addText}>
-                  <TextInput
-                    placeholder="Enter a task"
-                    value={task}
-                    onChangeText={setTask}
-                  />
-                </View>
-                <View style={{alignItems: 'center'}}>
-                  <Pressable style={styles.submitButton} onPress={handleSubmit}>
-                    <Text>Submit </Text>
-                  </Pressable>
-                </View>
-              </View>
-            </Modal>
-          </View>
-          <View
-            style={{
-              alignItems: 'flex-end',
-              height: '100%',
-              width: '100%',
-              justifyContent: 'flex-end',
-              position: 'absolute',
-            }}
-          >
+
+          <View style={styles.addContainer}>
             <Pressable style={styles.add} onPress={handleAdd}>
               <Text>Add </Text>
             </Pressable>
           </View>
         </View>
+      </View>
+      <View>
+        <Modal visible={visible} animationType="slide" transparent={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.addText}>
+              <TextInput
+                placeholder="Enter a task"
+                value={task}
+                onChangeText={setTask}
+              />
+            </View>
+            <View style={{alignItems: 'center'}}>
+              <Pressable style={styles.submitButton} onPress={handleSubmit}>
+                <Text>Submit </Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </View>
     </View>
   );
@@ -97,11 +88,14 @@ const styles = StyleSheet.create({
   wrap: {
     borderWidth: 2,
     height: 50,
-    borderRadius: 20,
+    borderRadius: 10,
     borderColor: colors.greyColor,
     backgroundColor: colors.whiteColor,
     margin: 20,
     padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   add: {
     backgroundColor: colors.secondaryColor,
@@ -128,39 +122,34 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     marginStart: 20,
   },
-  modalView: {
+  modalContainer: {
+    backgroundColor: colors.whiteColor,
     margin: 20,
-    backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
+    height: 150,
+    width: 300,
+    alignSelf: 'center',
+    marginTop: '50%',
+    elevation: 6,
     shadowColor: '#000',
     shadowOffset: {
-      width: 0,
+      width: 2,
       height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
   },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
+  addContainer: {
+    alignItems: 'flex-end',
+    height: '100%',
+    width: '100%',
+    justifyContent: 'flex-end',
+    position: 'absolute',
   },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
+  deleteButton: {
+    fontSize: 14,
+    color: colors.primaryColor,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
   },
 });
